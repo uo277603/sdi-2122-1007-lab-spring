@@ -17,19 +17,19 @@ public class ProfesorController {
         return teacher.toString();
     }
 
-    @RequestMapping(value="/profesor/edit/{dni}", method= RequestMethod.POST)
-    public String getEdit(@ModelAttribute Profesor teacher, @PathVariable String dni){
+    @RequestMapping(value="/profesor/edit/{id}", method= RequestMethod.POST)
+    public String getEdit(@ModelAttribute Profesor teacher, @PathVariable Long id){
         return "Editar: " + teacher.toString();
     }
 
-    @RequestMapping("/profesor/details/{dni}")
-    public String getDetail(@PathVariable String dni){
-        return "Eliminar: " + teacherService.getProfesor(dni).toString();
+    @RequestMapping("/profesor/details/{id}")
+    public String getDetail(@PathVariable Long id){
+        return teacherService.getProfesor(id).toString();
     }
 
-    @RequestMapping("/profesor/delete/{dni}")
-    public String deleteTeacher(@PathVariable String dni){
-        teacherService.deleteProfesor(dni);
-        return "Eliminado: " + dni;
+    @RequestMapping("/profesor/delete/{id}")
+    public String deleteTeacher(@PathVariable Long id){
+        teacherService.deleteProfesor(id);
+        return "Eliminado: " + id;
     }
 }

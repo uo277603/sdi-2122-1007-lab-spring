@@ -1,6 +1,9 @@
 package com.uniovi.sdi21221007spring.services;
 
+import com.uniovi.sdi21221007spring.entities.Mark;
 import com.uniovi.sdi21221007spring.entities.Profesor;
+import com.uniovi.sdi21221007spring.repositories.ProfesorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,6 +12,10 @@ import java.util.List;
 @Service
 public class ProfesorService {
 
+    @Autowired
+    private ProfesorRepository profesorRepository;
+
+    /*
     List<Profesor> profesores = new ArrayList<>();
 
     public ProfesorService(){
@@ -17,25 +24,24 @@ public class ProfesorService {
         profesores.add(new Profesor("3", "Antonio", "Garcia", "practicas"));
     }
 
+     */
+
     public List<Profesor> getProfesors(){
-        return new ArrayList<>(profesores);
+        List<Profesor> profesors = new ArrayList<Profesor>();
+        profesorRepository.findAll().forEach(profesors::add);
+        return profesors;
     }
 
     public void addProfesor(Profesor profesor){
-        profesores.add(profesor);
+        profesorRepository.save(profesor);
     }
 
-    public void deleteProfesor(String dni){
-        profesores.removeIf(profesor -> profesor.getDni().equals(dni));
+    public void deleteProfesor(Long id){
+        profesorRepository.deleteById(id);
 
     }
 
-    public Profesor getProfesor(String dni){
-        for (Profesor t: profesores
-        ) {
-            if(t.getDni().equals(dni))
-                return t;
-        }
-        return new Profesor();
+    public Profesor getProfesor(Long id){
+        return profesorRepository.findById(id).get();
     }
 }
