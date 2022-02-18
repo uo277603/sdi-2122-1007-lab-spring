@@ -3,11 +3,13 @@ package com.uniovi.sdi21221007spring.controllers;
 import com.uniovi.sdi21221007spring.entities.User;
 import com.uniovi.sdi21221007spring.services.SecurityService;
 import com.uniovi.sdi21221007spring.services.UsersService;
+import com.uniovi.sdi21221007spring.validators.SignUpFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +24,26 @@ public class UsersController {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private SignUpFormValidator signUpFormValidator;
+
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public String signup(@ModelAttribute("user") User user, Model model) {
+    public String signup(@ModelAttribute("user") User user, BindingResult result) {
+        signUpFormValidator.validate(user, result);
+        if (result.hasErrors())
+            return "signup";
+
         usersService.addUser(user);
         securityService.autoLogin(user.getDni(), user.getPasswordConfirm());
         return "redirect:home";
     }
+
+    @RequestMapping(value = "/signup", method = RequestMethod.GET)
+    public String signup(Model model) {
+        model.addAttribute("user", new User());
+        return "signup";
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model) {
         return "login";
