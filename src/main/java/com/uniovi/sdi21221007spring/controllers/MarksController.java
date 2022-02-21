@@ -1,6 +1,7 @@
 package com.uniovi.sdi21221007spring.controllers;
 
 import com.uniovi.sdi21221007spring.entities.Mark;
+import com.uniovi.sdi21221007spring.entities.User;
 import com.uniovi.sdi21221007spring.services.MarksService;
 import com.uniovi.sdi21221007spring.services.UsersService;
 import com.uniovi.sdi21221007spring.validators.AddMarkFormValidator;
@@ -12,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,8 +33,10 @@ public class MarksController {
     private HttpSession httpSession;
 
     @RequestMapping("/mark/list")
-    public String getList(Model model) {
-        model.addAttribute("markList", marksService.getMarks());
+    public String getList(Model model, Principal principal) {
+        String dni = principal.getName();
+        User user = usersService.getUserByDni(dni);
+        model.addAttribute("markList", marksService.getMarksForUser(user));
         return "mark/list";
     }
 
@@ -76,7 +80,7 @@ public class MarksController {
     }
 
     @RequestMapping(value="/mark/edit/{id}", method=RequestMethod.POST)
-    public String setEdit(@ModelAttribute("mark") Mark mark, @PathVariable Long id, BindingResult result, Model model){
+    public String setEdit(@Validated Mark mark, @PathVariable Long id, BindingResult result, Model model){
         addMarkFormValidator.validate(mark, result);
         if(result.hasErrors()){
             model.addAttribute("usersList", usersService.getUsers());
@@ -93,8 +97,10 @@ public class MarksController {
     }
 
     @RequestMapping("/mark/list/update")
-    public String updateList(Model model){
-        model.addAttribute("markList", marksService.getMarks());
+    public String updateList(Model model, Principal principal){
+        String dni = principal.getName();
+        User user = usersService.getUserByDni(dni);
+        model.addAttribute("markList", marksService.getMarksForUser(user));
         return "mark/list::tableMarks";
     }
 
