@@ -11,23 +11,23 @@ public class ProfesorController {
     @Autowired
     private ProfesorService teacherService;
 
-    @RequestMapping("/profesor/add")
+    @RequestMapping("/professor/add")
     public String setTeacher(@ModelAttribute Profesor teacher){
         teacherService.addProfesor(teacher);
         return teacher.toString();
     }
 
-    @RequestMapping(value="/profesor/edit/{id}", method= RequestMethod.POST)
+    @RequestMapping(value="/professor/edit/{id}", method= RequestMethod.POST)
     public String getEdit(@ModelAttribute Profesor teacher, @PathVariable Long id){
         return "Editar: " + teacher.toString();
     }
 
-    @RequestMapping("/profesor/details/{id}")
+    @RequestMapping("/professor/details/{id}")
     public String getDetail(@PathVariable Long id){
         return teacherService.getProfesor(id).toString();
     }
 
-    @RequestMapping("/profesor/delete/{id}")
+    @RequestMapping("/professor/delete/{id}")
     public String deleteTeacher(@PathVariable Long id){
         teacherService.deleteProfesor(id);
         return "Eliminado: " + id;
