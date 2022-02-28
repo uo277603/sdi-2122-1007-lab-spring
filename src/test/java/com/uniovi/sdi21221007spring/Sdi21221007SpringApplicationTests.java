@@ -1,9 +1,7 @@
 package com.uniovi.sdi21221007spring;
 
-import com.uniovi.sdi21221007spring.pageobjects.PO_HomeView;
-import com.uniovi.sdi21221007spring.pageobjects.PO_Properties;
-import com.uniovi.sdi21221007spring.pageobjects.PO_SignUpView;
-import com.uniovi.sdi21221007spring.pageobjects.PO_View;
+import com.uniovi.sdi21221007spring.pageobjects.*;
+import com.uniovi.sdi21221007spring.util.SeleniumUtils;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,6 +9,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+
+import static com.uniovi.sdi21221007spring.pageobjects.PO_View.getTimeout;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -197,6 +197,85 @@ class Sdi21221007SpringApplicationTests {
         //Comprobamos el error de Nombre corto de nombre corto .
         String checkText = PO_HomeView.getP().getString("Error.signup.passwordConfirm.coincidence",
                 PO_Properties.getSPANISH());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+
+    //Rol usuario
+    @Test
+    @Order(13)
+    public void PR07() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999990A", "123456");
+        //Comprobamos que entramos en la pagina privada de Alumno
+        String checkText = "Notas del usuario";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+
+    //Rol profesor
+    @Test
+    @Order(14)
+    public void PR08() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999993D", "123456");
+
+        //Desplegar el menú de gestión de notas y ver si está la opción agregar notas
+        List<WebElement> elements = SeleniumUtils.waitLoadElementsByXpath(driver, "//*[@id='navbarDropdown']", getTimeout());
+        elements.get(0).click();
+        SeleniumUtils.waitLoadElementsByXpath(driver, "//*[@id='marks-menu']/div/a[2]", getTimeout());
+
+        PO_HomeView.clickOption(driver, "/mark/add", "id", "marks-menu");
+    }
+
+
+    //Rol Administrador
+    @Test
+    @Order(14)
+    public void PR09() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999988F", "123456");
+
+        //Al ser el rol de admin debería aparecer el apartado de gestión de profesores
+        List<WebElement> elements = SeleniumUtils.waitLoadElementsByXpath(driver, "//*[@id='profesorDropdown']", getTimeout());
+    }
+
+    //Inválida con Rol alumno
+    @Test
+    @Order(14)
+    public void PR10() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999990A", "1234556");
+        //Comprobamos que al darle a login seguimos en la página
+        String checkText = "Identifícate";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+    }
+
+    //Inválida y desconexión con Rol usuario
+    @Test
+    @Order(14)
+    public void PR11() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999990A", "123456");
+
+        PO_HomeView.clickOption(driver, "logout", "class", "btn btn-primary");
+
+        //Comprobamos que al darle a logout nos lleva a la página de login
+        String checkText = "Identifícate";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
